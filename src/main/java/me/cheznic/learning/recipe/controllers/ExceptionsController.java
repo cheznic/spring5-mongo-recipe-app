@@ -1,0 +1,31 @@
+package me.cheznic.learning.recipe.controllers;
+
+import lombok.extern.slf4j.Slf4j;
+import me.cheznic.learning.recipe.exceptions.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+
+/**
+ * Created by Charles Nicoletti on 9/3/18
+ */
+@Slf4j
+@ControllerAdvice
+public class ExceptionsController {
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public ModelAndView handleBadRequest(Exception exception) {
+
+        log.error(exception.getMessage());
+
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.setViewName("400error");
+        modelAndView.addObject("exception", exception);
+
+        return modelAndView;
+    }
+}

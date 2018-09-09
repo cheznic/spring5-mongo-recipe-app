@@ -1,0 +1,6 @@
+/*
+ *  Gradle settings
+ *
+ *  Created by Charles Nicoletti on September 9, 2018
+ */
+rootProject.name = 'spring5-mongo-recipe-app'
