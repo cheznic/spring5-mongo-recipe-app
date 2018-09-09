@@ -1,6 +1,8 @@
 # Spring 5 and MongoDB Recipe Application
 
-[![CircleCI](https://circleci.com/gh/cheznic/spring5-recipe-app.svg?style=svg)](https://circleci.com/gh/cheznic/spring5-mongo-recipe-app)
+[![CircleCI](https://circleci.com/gh/cheznic/spring5-mongo-recipe-app.svg?style=svg)](https://circleci.com/gh/cheznic/spring5-mongo-recipe-app)
+
+[![codecov](https://codecov.io/gh/cheznic/spring5-mongo-recipe-app/branch/master/graph/badge.svg)](https://codecov.io/gh/cheznic/spring5-mongo-recipe-app)
 
 Simple recipe management app.
 
@@ -14,7 +16,7 @@ Technologies used:
     - [Input validation](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#validation)
     - [Spring MVC](https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html)
     - [Type conversion](https://docs.spring.io/spring-framework/docs/current/spring-framework-reference/core.html#validation)
-  - [Spring Data JPA](https://spring.io/projects/spring-data) implementing [JPA](https://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) for RDB access abstractions.
+  - [Spring Data JPA](https://spring.io/projects/spring-data) implementing [JPA](https://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) for NoSQL data access abstractions.
 - [Lombok tag library](https://github.com/rzwitserloot/lombok) to reduce boiler plate code
 - [MongoDB](https://www.mongodb.com/) for persistence
 - [Junit 4](https://junit.org/junit4/) and [Mockito](https://site.mockito.org/) for Unit, Mocks and Integration testing
