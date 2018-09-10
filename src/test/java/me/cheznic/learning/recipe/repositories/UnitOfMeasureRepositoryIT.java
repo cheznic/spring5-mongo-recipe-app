@@ -1,8 +1,8 @@
 package me.cheznic.learning.recipe.repositories;
 
+import me.cheznic.learning.recipe.bootstrap.RecipeBootstrap;
 import me.cheznic.learning.recipe.model.UnitOfMeasure;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 @RunWith(SpringRunner.class)
 @DataMongoTest
 public class UnitOfMeasureRepositoryIT {
@@ -21,8 +20,20 @@ public class UnitOfMeasureRepositoryIT {
     @Autowired
     UnitOfMeasureRepository unitOfMeasureRepository;
 
+    @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
+    RecipeRepository recipeRepository;
+
     @Before
     public void setUp() throws Exception {
+        recipeRepository.deleteAll();
+        unitOfMeasureRepository.deleteAll();
+        categoryRepository.deleteAll();
+
+        RecipeBootstrap recipeBootstrap = new RecipeBootstrap(categoryRepository, recipeRepository, unitOfMeasureRepository);
+        recipeBootstrap.onApplicationEvent(null);
     }
 
     @Test
