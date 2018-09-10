@@ -2,7 +2,6 @@ package me.cheznic.learning.recipe.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import me.cheznic.learning.recipe.commands.RecipeCommand;
-import me.cheznic.learning.recipe.exceptions.BadRequestException;
 import me.cheznic.learning.recipe.exceptions.NotFoundException;
 import me.cheznic.learning.recipe.services.RecipeService;
 import org.springframework.http.HttpStatus;
@@ -32,12 +31,6 @@ public class RecipeController {
     @GetMapping("/recipe/{id}/show")
     public String showById(@PathVariable String id, Model model) {
 
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("recipe", recipeService.findById(id));
 
         return "recipe/show";
@@ -52,24 +45,20 @@ public class RecipeController {
     @GetMapping("recipe/{id}/update")
     public String updateRecipe(@PathVariable String id, Model model) {
 
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("recipe", recipeService.findCommandById(id));
         return RECIPE_RECIPEFORM_URL;
     }
 
     @PostMapping("recipe")
     public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult bindingResult){
+
         if(bindingResult.hasErrors()){
             bindingResult.getAllErrors().forEach(objectError -> {
                 log.debug(objectError.toString());
             });
             return RECIPE_RECIPEFORM_URL;
         }
+
         RecipeCommand savedCommand = recipeService.saveRecipeCommand(command);
 
         return "redirect:/recipe/" + savedCommand.getId() + "/show";
@@ -77,12 +66,6 @@ public class RecipeController {
 
     @GetMapping("recipe/{id}/delete")
     public String deleteById(@PathVariable String id) {
-
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
 
         recipeService.deleteById(id);
         log.debug("Deleting id: " + id);
@@ -99,9 +82,5 @@ public class RecipeController {
         modelAndView.addObject("exception", e);
 
         return modelAndView;
-    }
-
-    private boolean isNotNumeric(String s) {
-        return !s.matches("\\d+");
     }
 }

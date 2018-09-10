@@ -2,8 +2,10 @@ package me.cheznic.learning.recipe.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  * Created by Charles Nicoletti on 8/25/18
@@ -12,11 +14,12 @@ import java.math.BigDecimal;
 @Setter
 public class Ingredient {
 
-    private String id;
+    private String id = UUID.randomUUID().toString();
     private String description;
     private BigDecimal amount;
+
+    @DBRef
     private UnitOfMeasure uom;
-    private Recipe recipe;
 
     public Ingredient() {
         

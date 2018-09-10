@@ -32,10 +32,11 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
         log.trace("converting to Ingredient from IngredientCommand");
 
         final Ingredient ingredient = new Ingredient();
+        ingredient.setId(ingredientCommand.getId());
+
         ingredient.setDescription(ingredientCommand.getDescription());
         ingredient.setAmount(ingredientCommand.getAmount());
         ingredient.setUom(uomConverter.convert(ingredientCommand.getUom()));
-        ingredient.setId(ingredientCommand.getId());
         return ingredient;
     }
 }

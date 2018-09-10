@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import me.cheznic.learning.recipe.commands.IngredientCommand;
 import me.cheznic.learning.recipe.commands.RecipeCommand;
 import me.cheznic.learning.recipe.commands.UnitOfMeasureCommand;
-import me.cheznic.learning.recipe.exceptions.BadRequestException;
 import me.cheznic.learning.recipe.services.IngredientService;
 import me.cheznic.learning.recipe.services.RecipeService;
 import me.cheznic.learning.recipe.services.UnitOfMeasureService;
@@ -33,12 +32,6 @@ public class IngredientController {
     @RequestMapping("/recipe/{recipeId}/ingredients")
     public String listIngredients(@PathVariable String recipeId, Model model) {
 
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("recipe", recipeService.findCommandById(recipeId));
         log.debug("Getting ingredient list for recipe id: " + recipeId);
 
@@ -51,12 +44,6 @@ public class IngredientController {
                                         @PathVariable String ingredientId,
                                         Model model) {
 
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, ingredientId));
 
         log.debug("Showing ingredient of id: " + ingredientId);
@@ -67,12 +54,6 @@ public class IngredientController {
     @GetMapping
     @RequestMapping("recipe/{recipeId}/ingredient/new")
     public String newRecipe(@PathVariable String recipeId, Model model) {
-
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
 
         RecipeCommand recipeCommand = recipeService.findCommandById(recipeId);
 
@@ -94,12 +75,6 @@ public class IngredientController {
     public String updateRecipeIngredient(@PathVariable String recipeId,
                                          @PathVariable String id, Model model) {
 
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id));
 
         model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
@@ -110,12 +85,6 @@ public class IngredientController {
 
     @PostMapping("recipe/{recipeId}/ingredient")
     public String saveOrUpdate(@PathVariable String recipeId, @ModelAttribute IngredientCommand command) {
-
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            //log.warn(message);
-            throw new BadRequestException(message);
-        }
 
         IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command);
 
@@ -128,19 +97,9 @@ public class IngredientController {
     @GetMapping("recipe/{recipeId}/ingredient/{ingredientId}/delete")
     public String deleteById(@PathVariable String ingredientId, @PathVariable String recipeId) {
 
-        if (isNotNumeric(recipeId)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + recipeId;
-            //log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         log.debug("Deleting ingredient with id: " + ingredientId + "from recipe: " + recipeId);
 
         ingredientService.deleteByRecipeIdAndIngredientId(recipeId, ingredientId);
         return "redirect:/recipe/" + recipeId + "/ingredients";
-    }
-
-    private boolean isNotNumeric(String s) {
-        return !s.matches("\\d+");
     }
 }

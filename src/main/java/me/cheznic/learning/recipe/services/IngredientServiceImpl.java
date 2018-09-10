@@ -50,14 +50,17 @@ public class IngredientServiceImpl implements IngredientService {
 
         Optional<IngredientCommand> ingredientCommandOptional = recipe.getIngredients().stream()
                 .filter(ingredient -> ingredient.getId().equals(ingredientId))
-                .map(ingredient -> ingredientToIngredientCommand.convert(ingredient)).findFirst();
+                .map(ingredientToIngredientCommand::convert).findFirst();
 
         if (!ingredientCommandOptional.isPresent()) {
             //todo impl error handling
             log.error("Ingredient id not found: " + ingredientId);
         }
 
-        return ingredientCommandOptional.get();
+        IngredientCommand ingredientCommand = ingredientCommandOptional.get();
+        ingredientCommand.setRecipeId(recipeId);
+
+        return ingredientCommand;
     }
 
     @Override
@@ -90,7 +93,6 @@ public class IngredientServiceImpl implements IngredientService {
         } else {
             //add new Ingredient
             Ingredient ingredient = ingredientCommandToIngredient.convert(ingredientCommand);
-            ingredient.setRecipe(recipe);
             recipe.addIngredient(ingredient);
         }
 
@@ -112,8 +114,13 @@ public class IngredientServiceImpl implements IngredientService {
                     .findFirst();
         }
 
-        //to do check for fail
-        return ingredientToIngredientCommand.convert(savedOptionalIngredient.get());
+        //todo check for fail
+
+        //enhance with id value
+        IngredientCommand ingredientCommandSaved = ingredientToIngredientCommand.convert(savedOptionalIngredient.get());
+        ingredientCommandSaved.setRecipeId(recipe.getId());
+
+        return ingredientCommandSaved;
     }
 
     @Override
@@ -141,7 +148,6 @@ public class IngredientServiceImpl implements IngredientService {
             return; //todo throw exception
         }
 
-        optionalIngredient.get().setRecipe(null);
         recipe.getIngredients().remove(optionalIngredient.get());
         recipeRepository.save(recipe);
 

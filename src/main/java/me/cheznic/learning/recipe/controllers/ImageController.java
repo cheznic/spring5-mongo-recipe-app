@@ -2,7 +2,6 @@ package me.cheznic.learning.recipe.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import me.cheznic.learning.recipe.commands.RecipeCommand;
-import me.cheznic.learning.recipe.exceptions.BadRequestException;
 import me.cheznic.learning.recipe.services.ImageService;
 import me.cheznic.learning.recipe.services.RecipeService;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -38,12 +37,6 @@ public class ImageController {
     @GetMapping("/recipe/{id}/image")
     public String showUploadForm(@PathVariable String id, Model model) {
 
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         model.addAttribute("recipe", recipeService.findCommandById(id));
 
         return "recipe/imageuploadform";
@@ -52,12 +45,6 @@ public class ImageController {
     @PostMapping("recipe/{id}/image")
     public String handleImagePost(@PathVariable String id, @RequestParam("imagefile") MultipartFile file) {
 
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
-
         imageService.saveImageFile(id, file);
 
         return "redirect:/recipe/" + id + "/show";
@@ -65,12 +52,6 @@ public class ImageController {
 
     @GetMapping("recipe/{id}/recipeimage")
     public void renderImageFromDB(@PathVariable String id, HttpServletResponse response) throws IOException {
-
-        if (isNotNumeric(id)) {
-            String message = "Recipe identifier must be a positive integer.  Value received is: " + id;
-            log.warn(message);
-            throw new BadRequestException(message);
-        }
 
         RecipeCommand recipeCommand = recipeService.findCommandById(id);
 
@@ -86,9 +67,5 @@ public class ImageController {
             InputStream is = new ByteArrayInputStream(byteArray);
             IOUtils.copy(is, response.getOutputStream());
         }
-    }
-
-    private boolean isNotNumeric(String s) {
-        return !s.matches("\\d+");
     }
 }
