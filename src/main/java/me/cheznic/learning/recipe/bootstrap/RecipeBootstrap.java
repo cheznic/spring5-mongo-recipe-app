@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 /**
@@ -35,13 +36,20 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
+    // cool little function that returns a random number value as text
+    static private String numberText() {
+        String[] numbers = "one,two,three,four,five,six,seven,eight,nine,ten".split(",");
+        return numbers[new Random().nextInt(numbers.length)];
+    }
+
     @Override
     @Transactional
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        log.debug("######## Loading Bootstrap Data");
+
         loadCategories();
         loadUom();
         recipeRepository.saveAll(getRecipes());
+
     }
 
     private void loadCategories(){
