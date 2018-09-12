@@ -3,12 +3,9 @@ package me.cheznic.learning.recipe.services;
 import lombok.extern.slf4j.Slf4j;
 import me.cheznic.learning.recipe.commands.UnitOfMeasureCommand;
 import me.cheznic.learning.recipe.converters.UnitOfMeasureToUnitOfMeasureCommand;
-import me.cheznic.learning.recipe.repositories.UnitOfMeasureRepository;
+import me.cheznic.learning.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import reactor.core.publisher.Flux;
 
 /**
  * Created by Charles Nicoletti on 9/2/18
@@ -17,23 +14,26 @@ import java.util.stream.StreamSupport;
 @Service
 public class UnitOfMeasureServiceImpl implements UnitOfMeasureService {
 
-    private final UnitOfMeasureRepository uOMRepository;
-    private final UnitOfMeasureToUnitOfMeasureCommand uOMToUomCommand;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+    private final UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand;
 
 
-    public UnitOfMeasureServiceImpl(UnitOfMeasureRepository uOMRepository, UnitOfMeasureToUnitOfMeasureCommand uOMToUomCommand) {
-        this.uOMRepository = uOMRepository;
-        this.uOMToUomCommand = uOMToUomCommand;
+    public UnitOfMeasureServiceImpl(
+            UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository,
+            UnitOfMeasureToUnitOfMeasureCommand unitOfMeasureToUnitOfMeasureCommand) {
+
+        this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
+        this.unitOfMeasureToUnitOfMeasureCommand = unitOfMeasureToUnitOfMeasureCommand;
     }
 
     @Override
-    public Set<UnitOfMeasureCommand> listAllUoms() {
+    public Flux<UnitOfMeasureCommand> listAllUoms() {
 
         log.debug("Listing all units of measure");
 
-        return StreamSupport
-                .stream(uOMRepository.findAll().spliterator(), false)
-                .map(uOMToUomCommand::convert)
-                .collect(Collectors.toSet());
+        return unitOfMeasureReactiveRepository
+                .findAll()
+                .map(unitOfMeasureToUnitOfMeasureCommand::convert);
+
     }
 }

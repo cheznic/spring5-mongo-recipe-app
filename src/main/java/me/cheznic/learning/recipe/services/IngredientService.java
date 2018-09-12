@@ -1,15 +1,16 @@
 package me.cheznic.learning.recipe.services;
 
 import me.cheznic.learning.recipe.commands.IngredientCommand;
+import reactor.core.publisher.Mono;
 
 /**
  * Created by Charles Nicoletti on 9/2/18
  */
 public interface IngredientService {
 
-    IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId);
+    Mono<IngredientCommand> findByRecipeIdAndIngredientId(String recipeId, String ingredientId);
 
-    IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand);
+    Mono<IngredientCommand> saveIngredientCommand(IngredientCommand ingredientCommand);
 
-    void deleteByRecipeIdAndIngredientId(String recipeId, String idToDelete);
+    Mono<Void> deleteByRecipeIdAndIngredientId(String recipeId, String idToDelete);
 }

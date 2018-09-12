@@ -3,13 +3,15 @@ package me.cheznic.learning.recipe.services;
 import me.cheznic.learning.recipe.commands.UnitOfMeasureCommand;
 import me.cheznic.learning.recipe.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import me.cheznic.learning.recipe.model.UnitOfMeasure;
-import me.cheznic.learning.recipe.repositories.UnitOfMeasureRepository;
+import me.cheznic.learning.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Flux;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -21,13 +23,13 @@ public class UnitOfMeasureServiceImplTest {
     private UnitOfMeasureService uomService;
 
     @Mock
-    UnitOfMeasureRepository unitOfMeasureRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        uomService = new UnitOfMeasureServiceImpl(unitOfMeasureRepository, unitOfMeasureToUnitOfMeasureCommand);
+        uomService = new UnitOfMeasureServiceImpl(unitOfMeasureReactiveRepository, unitOfMeasureToUnitOfMeasureCommand);
     }
 
     @Test
@@ -43,13 +45,13 @@ public class UnitOfMeasureServiceImplTest {
         uom2.setId("2");
         unitOfMeasures.add(uom2);
 
-        when(unitOfMeasureRepository.findAll()).thenReturn(unitOfMeasures);
+        when(unitOfMeasureReactiveRepository.findAll()).thenReturn(Flux.just(uom1, uom2));
 
         //when
-        Set<UnitOfMeasureCommand> commands = uomService.listAllUoms();
+        List<UnitOfMeasureCommand> commands = uomService.listAllUoms().collectList().block();
 
         //then
         assertEquals(2, commands.size());
-        verify(unitOfMeasureRepository, times(1)).findAll();
+        verify(unitOfMeasureReactiveRepository, times(1)).findAll();
     }
 }

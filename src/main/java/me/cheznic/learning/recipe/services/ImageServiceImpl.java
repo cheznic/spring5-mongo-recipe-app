@@ -2,13 +2,12 @@ package me.cheznic.learning.recipe.services;
 
 import lombok.extern.slf4j.Slf4j;
 import me.cheznic.learning.recipe.model.Recipe;
-import me.cheznic.learning.recipe.repositories.RecipeRepository;
+import me.cheznic.learning.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * Created by Charles Nicoletti on 9/3/18
@@ -17,43 +16,42 @@ import java.util.Optional;
 @Service
 public class ImageServiceImpl implements ImageService {
 
-    private final RecipeRepository recipeRepository;
+    private final RecipeReactiveRepository recipeReactiveRepository;
 
-    public ImageServiceImpl( RecipeRepository recipeService) {
+    public ImageServiceImpl( RecipeReactiveRepository recipeReactiveRepository) {
 
-        this.recipeRepository = recipeService;
+        this.recipeReactiveRepository = recipeReactiveRepository;
     }
 
     @Override
-    @Transactional
-    public void saveImageFile(String recipeId, MultipartFile file) {
+    public Mono<Void> saveImageFile(String recipeId, MultipartFile file) {
 
-        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+        Mono<Recipe> recipeMono = recipeReactiveRepository.findById(recipeId)
 
-        if (!optionalRecipe.isPresent()) {
-            log.error("did not find recipe with id: " + recipeId);
-            // todo throw exception if recipe not found
-        }
+                .map(recipe -> {
+                    Byte[] byteObjects = new Byte[0];
+                    try {
+                        byteObjects = new Byte[file.getBytes().length];
 
-        Recipe recipe = optionalRecipe.get();
+                        int i = 0;
 
-        try {
-            Byte[] byteObjects = new Byte[file.getBytes().length];
+                        for (byte b : file.getBytes()) {
+                            byteObjects[i++] = b;
+                        }
 
-            int i = 0;
+                        recipe.setImage(byteObjects);
 
-            for (byte b : file.getBytes()){
-                byteObjects[i++] = b;
-            }
+                        return recipe;
 
-            recipe.setImage(byteObjects);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                });
 
-            recipeRepository.save(recipe);
-        } catch (IOException e) {
-            //todo handle better
-            log.error("Error occurred", e);
+        recipeReactiveRepository.save(recipeMono.block()).block();
 
-            e.printStackTrace();
-        }
+        return Mono.empty();
     }
+
 }
